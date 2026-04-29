@@ -1,4 +1,4 @@
-package liu.alden.concbench.virtualthread;
+package liu.alden.concbench.j25.virtualthread;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -8,10 +8,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @since 2026-04-29
  */
 @SpringBootApplication
-public class ThreadPoolApplication {
+public class VirtualThreadApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(ThreadPoolApplication.class, args);
+		SpringApplication.run(VirtualThreadApplication.class, args);
 	}
 
 }

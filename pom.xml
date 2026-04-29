@@ -7,8 +7,8 @@
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>4.0.6</version>
     </parent>
-    <groupId>liu.alden.concbench</groupId>
-    <artifactId>concurrency-bench</artifactId>
+    <groupId>liu.alden.concbench.j25</groupId>
+    <artifactId>concbench-j25</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>Java 25 Concurrency Benchmark</name>
@@ -20,6 +20,7 @@
     <properties>
         <java.version>25</java.version>
         <skipTests>true</skipTests>
+        <spring-boot.run.skip>true</spring-boot.run.skip>
     </properties>
     <modules>
         <module>thread-pool</module>
@@ -27,7 +28,7 @@
         <module>reactive</module>
     </modules>
     <build>
-        <finalName>${project.artifactId}</finalName>
+        <finalName>${project.parent.artifactId}-${project.artifactId}</finalName>
     </build>
 
     <repositories>

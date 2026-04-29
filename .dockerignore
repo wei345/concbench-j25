@@ -1,0 +1,16 @@
+tune-host.sh
+
+# Git
+.git
+.gitignore
+
+# Intellij project files
+*.iml
+.idea/
+
+# Java
+logs/
+target/
+
+# macOS
+.DS_Store

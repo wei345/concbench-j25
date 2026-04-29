@@ -1,4 +1,4 @@
-package liu.alden.concbench.virtualthread;
+package liu.alden.concbench.j25.reactive;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -8,10 +8,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @since 2026-04-29
  */
 @SpringBootApplication
-public class VirtualThreadApplication {
+public class ReactiveApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(VirtualThreadApplication.class, args);
+		SpringApplication.run(ReactiveApplication.class, args);
 	}
 
 }

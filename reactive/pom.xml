@@ -3,8 +3,8 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>liu.alden.concbench</groupId>
-        <artifactId>concurrency-bench</artifactId>
+        <groupId>liu.alden.concbench.j25</groupId>
+        <artifactId>concbench-j25</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
     <artifactId>reactive</artifactId>
@@ -13,6 +13,10 @@
         Benchmark implementation using reactive streams to evaluate non-blocking,
         asynchronous database access under high concurrency.
     </description>
+    <properties>
+        <start-class>liu.alden.concbench.j25.reactive.ReactiveApplication</start-class>
+        <spring-boot.run.skip>false</spring-boot.run.skip>
+    </properties>
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
