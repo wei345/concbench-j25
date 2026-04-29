@@ -1,0 +1,16 @@
+FROM openjdk:25-rc-oracle
+
+WORKDIR /app
+
+COPY target/reactive-*.jar app.jar
+
+# Raise file descriptor limits for the Reactive event loop's sockets
+RUN echo "* soft nofile 200000" >> /etc/security/limits.conf && \
+    echo "* hard nofile 200000" >> /etc/security/limits.conf
+
+# -XX:+UseZGC is also used here to ensure parity across all three tests [cite: 17]
+ENV JAVA_OPTS="-XX:+UseZGC -Xmx4G -Xms4G"
+
+EXPOSE 8080
+
+ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]

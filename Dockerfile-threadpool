@@ -1,0 +1,20 @@
+FROM openjdk:25-rc-oracle
+
+WORKDIR /app
+
+# Copy the lightweight JAR from your target folder
+COPY thread-pool/target/thread-pool.jar app.jar
+
+# Set OS limits for high concurrency (ulimit)
+# This is crucial for handling 100k+ concurrent TCP connections
+RUN echo "* soft nofile 200000" >> /etc/security/limits.conf && \
+    echo "* hard nofile 200000" >> /etc/security/limits.conf
+
+# Environment variables for Java 25 performance tuning
+# -XX:+UseZGC: Recommended for low-latency/high-thread benchmarks to avoid GC noise
+# -Djdk.tracePinnedThreads: To capture pinning data for RQ3
+ENV JAVA_OPTS="-XX:+UseZGC -Xmx4G -Xms4G -Djdk.tracePinnedThreads=full"
+
+EXPOSE 8080
+
+ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]

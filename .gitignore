@@ -1,0 +1,13 @@
+# Intellij project files
+*.iml
+.idea/
+
+# Java
+logs/
+application.log
+*_IS_UNDEFINED
+target/
+
+# macOS
+.DS_Store
+

@@ -1,0 +1,21 @@
+FROM openjdk:25-rc-oracle
+
+WORKDIR /app
+
+# Copy the lightweight JAR (ensure the name matches your build output)
+COPY target/virtual-thread.jar app.jar
+
+# Set OS limits for high concurrency (ulimit)
+# Required to handle 100k+ simultaneous TCP connections
+RUN echo "* soft nofile 200000" >> /etc/security/limits.conf && \
+    echo "* hard nofile 200000" >> /etc/security/limits.conf
+
+# JVM arguments for the benchmark:
+# -XX:+UseZGC: Minimizes STW pauses for cleaner P99 data [cite: 17]
+# -Xmx4G -Xms4G: Matches your AWS resource isolation spec [cite: 22]
+# -Djdk.tracePinnedThreads=full: Critical for RQ3 data collection [cite: 15]
+ENV JAVA_OPTS="-XX:+UseZGC -Xmx4G -Xms4G -Djdk.tracePinnedThreads=full"
+
+EXPOSE 8080
+
+ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]
