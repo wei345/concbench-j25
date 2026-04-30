@@ -14,7 +14,7 @@ This is a multi-module Maven project:
 * `virtual-thread`: Benchmark implementation using Java virtual threads.
 * `reactive`: Benchmark implementation using reactive streams.
 
-## Run load test
+## Run the load test
 
 Process:
 
@@ -34,7 +34,7 @@ threads to match the size of the available memory on you computer.
 * Network: Up to 5 Gbps
 * OS: Ubuntu 24.04 LTS tuned with the `tune-host.sh`, which is in the same directory as this file.
 
-To build Docker images,
+To build the Docker images,
 
 ```shell
 # In the root dir, where this file is located 
@@ -48,19 +48,23 @@ docker build --build-arg APP=reactive -t concbench-j25-reactive .
 To run the Docker images built from the previous step 
 (we only run one of them at a time),
 
+//    -XX:StartFlightRecording=filename=/logs/thread-pool.jfr,settings=profile,dumponexit=true" \
+
 ```shell
 # thread-pool
-docker run --rm \
+docker run --rm -d \
   --name concbench-j25-thread-pool \
   --ulimit nofile=200000:200000 \
   --memory=6g \
   -e JAVA_OPTS="-XX:+UseZGC \
     -Xmx4G \
     -Xms4G \
+    -XX:NativeMemoryTracking=summary \
     -Djdk.tracePinnedThreads=full \
     -Dserver.tomcat.threads.max=2000" \
+  -v `pwd`/logs:/logs \
   -p 8080:8080 \
-  -d concbench-j25-thread-pool
+  concbench-j25-thread-pool
 
 # virtual-thread
 docker run --rm -d \
@@ -70,27 +74,33 @@ docker run --rm -d \
   -e JAVA_OPTS="-XX:+UseZGC \
     -Xmx4G \
     -Xms4G \
+    -XX:NativeMemoryTracking=summary \
     -Djdk.tracePinnedThreads=full \
     -Dspring.threads.virtual.enabled=true \
     -Dserver.tomcat.threads.max=200000" \
+  -v `pwd`/logs:/logs \
   -p 8080:8080 \
   concbench-j25-virtual-thread
   
 # reactive
-docker run --rm \
+docker run --rm -d \
   --name concbench-j25-reactive \
   --ulimit nofile=200000:200000 \
   --memory=6g \
   -e JAVA_OPTS="-XX:+UseZGC \
     -Xmx4G \
     -Xms4G \
+    -XX:NativeMemoryTracking=summary \
     -Dserver.netty.connection-timeout=2s" \
-  -p 8081:8080 \
-  -d concbench-j25-reactive
+  -v `pwd`/logs:/logs \
+  -p 8080:8080 \
+  concbench-j25-reactive
 ```
 
 * `-XX:+UseZGC`: For low-latency/high-thread benchmarks to avoid GC noise
 * `-Djdk.tracePinnedThreads`: To capture pinning data for RQ3
+* `-XX:NativeMemoryTracking=summary`: Enable tracking thread stack usage via 
+the `jcmd`. This will cause 5-10% performance overhead.
 
 You may want to check configuration
 
@@ -107,16 +117,30 @@ docker exec concbench-j25-reactive cat /proc/self/limits | grep "Max open files"
 docker exec concbench-j25-thread-pool sh -c 'jcmd $(pgrep java) VM.command_line'
 docker exec concbench-j25-virtual-thread sh -c 'jcmd $(pgrep java) VM.command_line'
 docker exec concbench-j25-reactive sh -c 'jcmd $(pgrep java) VM.command_line'
+
+# Enter a running container
+docker exec -it concbench-j25-thread-pool /bin/bash
+# Enter a Docker image
+docker run --rm -it --entrypoint /bin/bash concbench-j25-thread-pool
 ```
 
 To stop,
 
 ```shell
 docker container kill concbench-j25-thread-pool
-
 docker container kill concbench-j25-virtual-thread
-
 docker container kill concbench-j25-reactive
+```
+
+### Collect JVM CPU and memory usage
+
+```shell
+# Appends CPU and memory usage to a log file every second
+# The -it flag allows your terminal to send the interrupt signal (SIGINT) 
+# to the shell running inside the container, so that it stops when you press 
+docker exec -it concbench-j25-thread-pool sh /app/usage.sh
+docker exec -it concbench-j25-virtual-thread sh /app/usage.sh
+docker exec -it concbench-j25-reactive sh /app/usage.sh
 ```
 
 ### Execute load test
@@ -124,6 +148,7 @@ docker container kill concbench-j25-reactive
 Use a load testing tool such as [wrk](https://github.com/wg/wrk).
 
 ```shell
+# 12 threads, 400 total HTTP connections, duration of 10s
 wrk -t12 -c400 -d10s --latency http://localhost:8080/benchmark/delay/1000
 ```
 

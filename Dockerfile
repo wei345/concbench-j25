@@ -1,4 +1,4 @@
-# # STAGE 1: Compilation
+# STAGE 1: Compile and package
 FROM maven:3.9-eclipse-temurin-25 AS build
 
 WORKDIR /app
@@ -20,16 +20,21 @@ RUN if [ "$APP" != "reactive" ] && [ "$APP" != "thread-pool" ] && [ "$APP" != "v
 fi
 
 RUN mvn clean package -am -pl $APP && \
-    mv $APP/target/*.jar app.jar && \
+    mv $APP/target/*.jar $APP.jar && \
     mvn clean
 
-# STAGE 2: Runtime
+# STAGE 2: Build the target Docker image
 FROM eclipse-temurin:25-jdk
 
 WORKDIR /app
 
-# Copy only the built JAR from the first stage
-COPY --from=build /app/*.jar app.jar
+# Copy only the built JAR and usage.sh from the first stage
+ARG APP
+ARG LOG_DIR="/logs"
+
+ENV APP=$APP LOG_DIR=$LOG_DIR
+
+COPY --from=build /app/$APP.jar /app/usage.sh ./
 
 # Raise file descriptor limits for the Reactive event loop's sockets
 RUN echo "* soft nofile 200000" >> /etc/security/limits.conf && \
@@ -37,4 +42,4 @@ RUN echo "* soft nofile 200000" >> /etc/security/limits.conf && \
 
 EXPOSE 8080
 
-ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]
+ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar $APP.jar"]
