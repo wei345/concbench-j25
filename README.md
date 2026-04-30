@@ -18,9 +18,10 @@ This is a multi-module Maven project:
 
 Process:
 
-1. Build the Docker images
-2. Run the Docker images
-3. Execute load test
+1. Build Docker images
+2. Run Docker images
+3. Print JVM CPU and memory usage
+4. Execute load test
 
 ### Build the Docker images
 
@@ -43,12 +44,17 @@ docker build --build-arg APP=virtual-thread -t concbench-j25-virtual-thread .
 docker build --build-arg APP=reactive -t concbench-j25-reactive .
 ```
 
+You may want to see what is inside the Docker images.
+
+```shell
+# Enter a Docker image
+docker run --rm -it --entrypoint /bin/bash concbench-j25-thread-pool
+```
+
 ### Run the Docker images
 
 To run the Docker images built from the previous step 
 (we only run one of them at a time),
-
-//    -XX:StartFlightRecording=filename=/logs/thread-pool.jfr,settings=profile,dumponexit=true" \
 
 ```shell
 # thread-pool
@@ -97,8 +103,8 @@ docker run --rm -d \
   concbench-j25-reactive
 ```
 
-* `-XX:+UseZGC`: For low-latency/high-thread benchmarks to avoid GC noise
-* `-Djdk.tracePinnedThreads`: To capture pinning data for RQ3
+* `-XX:+UseZGC`: Avoid GC noise
+* `-Djdk.tracePinnedThreads`: Capture pinning data for RQ3
 * `-XX:NativeMemoryTracking=summary`: Enable tracking thread stack usage via 
 the `jcmd`. This will cause 5-10% performance overhead.
 
@@ -118,10 +124,8 @@ docker exec concbench-j25-thread-pool sh -c 'jcmd $(pgrep java) VM.command_line'
 docker exec concbench-j25-virtual-thread sh -c 'jcmd $(pgrep java) VM.command_line'
 docker exec concbench-j25-reactive sh -c 'jcmd $(pgrep java) VM.command_line'
 
-# Enter a running container
+# Enter a running Docker container
 docker exec -it concbench-j25-thread-pool /bin/bash
-# Enter a Docker image
-docker run --rm -it --entrypoint /bin/bash concbench-j25-thread-pool
 ```
 
 To stop,
@@ -132,7 +136,7 @@ docker container kill concbench-j25-virtual-thread
 docker container kill concbench-j25-reactive
 ```
 
-### Collect JVM CPU and memory usage
+### Print JVM CPU and memory usage
 
 ```shell
 # Appends CPU and memory usage to a log file every second

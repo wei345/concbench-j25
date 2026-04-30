@@ -22,7 +22,7 @@ while true; do
     FGC=$(echo $J_STATS | awk "{print \$6}")
     TOTAL_USED_MB=$(echo $J_STATS | awk "{print (\$1+\$2+\$3+\$4)/1024}")
 
-    # Expanded Breakdown: Eden|S0|S1|Old, Meta (showing KB for small survivor spaces, MB for others)
+    # Breakdown: (Eden|S0|S1|Old), Meta (showing KB for small survivor spaces, MB for others)
     BREAKDOWN=$(echo $J_STATS | awk "{printf \"(%dMB|%.1fKB|%.1fKB|%dMB), %dMB\", \$3/1024, \$1, \$2, \$4/1024, \$5/1024}")
 
     echo "$(date +%H:%M:%S), $CPU%, $THREADS, $((STK_COM_KB/1024))/$((STK_RES_KB/1024))MB, ${TOTAL_USED_MB}MB, $BREAKDOWN, $FGC" | tee -a $LOG_DIR/$APP-usage.log
