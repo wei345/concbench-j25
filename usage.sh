@@ -1,6 +1,7 @@
 #!/bin/bash
+set -e
 
-echo "Time, CPU%, Threads, Stack(Com/Res), Heap_Used_MB, (Eden|S0|S1|Old), Meta, FGC"
+echo "time, cpu%, threads, stack_committed_mb, stack_reserved_mb, heap_used_mb, eden_mb, s0_kb, s1_kb, old_mb, meta_mb, fgc"
 PID=$(pgrep java)
 while true; do
     # 1. System Metrics
@@ -19,13 +20,13 @@ while true; do
     J_STATS=$(jstat -gc $PID | awk "NR==2 {print \$3,\$4,\$6,\$8,\$10,\$15}")
 
     # Parse Values & Total
-    FGC=$(echo $J_STATS | awk "{print \$6}")
+    FGC=$(echo "$J_STATS" | awk '{print ($6 == "-" || $6 == "" ? 0 : $6)}')
     TOTAL_USED_MB=$(echo $J_STATS | awk "{print (\$1+\$2+\$3+\$4)/1024}")
 
     # Breakdown: (Eden|S0|S1|Old), Meta (showing KB for small survivor spaces, MB for others)
-    BREAKDOWN=$(echo $J_STATS | awk "{printf \"(%dMB|%.1fKB|%.1fKB|%dMB), %dMB\", \$3/1024, \$1, \$2, \$4/1024, \$5/1024}")
+    BREAKDOWN=$(echo $J_STATS | awk "{printf \"%d, %.1f, %.1f, %d, %d\", \$3/1024, \$1, \$2, \$4/1024, \$5/1024}")
 
-    echo "$(date +%H:%M:%S), $CPU%, $THREADS, $((STK_COM_KB/1024))/$((STK_RES_KB/1024))MB, ${TOTAL_USED_MB}MB, $BREAKDOWN, $FGC" | tee -a $LOG_DIR/$APP-usage.log
+    echo "$(date +%H:%M:%S), $CPU, $THREADS, $((STK_COM_KB/1024)), $((STK_RES_KB/1024)), ${TOTAL_USED_MB}, $BREAKDOWN, $FGC" | tee -a $LOG_DIR/$APP-usage.csv
 
     sleep 1
 done

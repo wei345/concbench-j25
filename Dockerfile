@@ -30,16 +30,21 @@ WORKDIR /app
 
 # Copy only the built JAR and usage.sh from the first stage
 ARG APP
-ARG LOG_DIR="/logs"
-
+ARG LOG_DIR="/app/logs"
+ARG TZ="Pacific/Auckland"
 ENV APP=$APP LOG_DIR=$LOG_DIR
 
-COPY --from=build /app/$APP.jar /app/usage.sh ./
+COPY --from=build /app/$APP.jar /app/usage.sh /app/entrypoint.sh ./
+RUN chmod +x /app/entrypoint.sh && \
+    mkdir -p "$LOG_DIR"
 
 # Raise file descriptor limits for the Reactive event loop's sockets
 RUN echo "* soft nofile 200000" >> /etc/security/limits.conf && \
     echo "* hard nofile 200000" >> /etc/security/limits.conf
 
+# Set timezone
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
 EXPOSE 8080
 
-ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar $APP.jar"]
+ENTRYPOINT ["/app/entrypoint.sh"]
