@@ -9,6 +9,7 @@ stack_reserved_mb, heap_used_mb, eden_mb, s0_kb, s1_kb, old_mb, meta_mb, \
 compressed_class_mb, ygc, ygct, fgc, fgct, cgc, cgct, gct" > $LOG_FILE
 while true; do
     # 1. System metrics
+    # CPU% = (Usage Delta / Time Delta) * 100
     # Capture the first timestamp and usage (microseconds)
     T1_TIME=$(date +%s%N)
     T1_USAGE=$(cat /sys/fs/cgroup/cpu.stat | awk '/usage_usec/ {print $2}')
@@ -16,7 +17,6 @@ while true; do
     # Capture the second timestamp and usage
     T2_TIME=$(date +%s%N)
     T2_USAGE=$(cat /sys/fs/cgroup/cpu.stat | awk '/usage_usec/ {print $2}')
-    # (Usage Delta / Time Delta) * 100
     # We use nanoseconds for Time Delta to be extremely precise
     CPU=$(awk -v t1u="$T1_USAGE" -v t2u="$T2_USAGE" -v t1t="$T1_TIME" -v t2t="$T2_TIME" \
         'BEGIN { printf "%.1f", ((t2u - t1u) / ((t2t - t1t) / 1000)) * 100 }')

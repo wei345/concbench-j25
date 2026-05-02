@@ -150,7 +150,7 @@ The server configuration I used is shown below. You can use a different setup.
 
 Generator server:
 
-* vCPUs: 8
+* vCPUs: 8 (was overkill. actually even 4 is more than enough)
 * Memory: 16GB
 * Network: 1Gbps
 * OS: Ubuntu 24.04 LTS tuned with the `tune-generator.sh` (in the same directory as this file).
