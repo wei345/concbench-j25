@@ -13,7 +13,7 @@ across three distinct paradigms:
 ```
 +--------------------------------------------------------------+
 |  HOST SERVER (4 vCPU, 16GB RAM)                              |
-|  (Tuned with tune-host.sh)                                   |
+|  (Tuned with tune-app-server.sh)                             |
 |                                                              |
 |  +--------------------------------------------------------+  |
 |  |  DOCKER CONTAINER (--memory=12g)                       |  |
@@ -40,7 +40,7 @@ across three distinct paradigms:
            v
 +--------------------------------------------------------------+
 |  GENERATOR SERVER (8 vCPU, 16GB RAM)                         |
-|  (Tuned with tune-generator.sh)                              |
+|  (Tuned with tune-generator-server.sh)                       |
 |                                                              |
 |  +--------------------------------------------------------+  |
 |  |  wrk LOAD TESTING TOOL                                 |  |
@@ -65,7 +65,7 @@ as long as Docker is installed.
 * vCPUs: 4
 * Memory: 16GB
 * Network: 1 Gbps
-* OS: Ubuntu 24.04 LTS tuned with the `tune-host.sh` (in the same directory as this file).
+* OS: Ubuntu 24.04 LTS tuned with the `tune-app-server.sh` (in the same directory as this file).
 
 Build Docker images:
 
@@ -104,7 +104,7 @@ docker run --rm -d \
   -v `pwd`/logs:/app/logs \
   -p 8080:8080 \
   concbench-j25-thread-pool
-cat logs/out.log; sleep 1
+cat logs/out.log; sleep 2
 tail -f logs/usage-thread-pool.csv
 # Stop
 docker container kill concbench-j25-thread-pool
@@ -121,7 +121,7 @@ docker run --rm -d \
   -v `pwd`/logs:/app/logs \
   -p 8080:8080 \
   concbench-j25-virtual-thread
-cat logs/out.log; sleep 1
+cat logs/out.log; sleep 2
 tail -f logs/usage-virtual-thread.csv
 # Stop
 docker container kill concbench-j25-virtual-thread
@@ -134,11 +134,13 @@ docker run --rm -d \
   --memory=12g \
   -e JAVA_OPTS="-XX:+UseZGC \
     -Xmx8G -Xms8G \
-    -XX:NativeMemoryTracking=summary" \
+    -XX:NativeMemoryTracking=summary \
+    -Dio.netty.leakDetection.trackClose=false \
+    -Dio.netty.leakDetection.level=disabled" \
   -v `pwd`/logs:/app/logs \
   -p 8080:8080 \
   concbench-j25-reactive
-cat logs/out.log; sleep 1
+cat logs/out.log; sleep 2
 tail -f logs/usage-reactive.csv
 # Stop
 docker container kill concbench-j25-reactive
@@ -150,10 +152,10 @@ The server configuration I used is shown below. You can use a different setup.
 
 Generator server:
 
-* vCPUs: 8 (was overkill. actually even 4 is more than enough)
+* vCPUs: 8 (was overkill. actually even 4 is more than what is needed)
 * Memory: 16GB
 * Network: 1Gbps
-* OS: Ubuntu 24.04 LTS tuned with the `tune-generator.sh` (in the same directory as this file).
+* OS: Ubuntu 24.04 LTS tuned with the `tune-generator-server.sh` (in the same directory as this file).
 
 The following commands use [wrk](https://github.com/wg/wrk) to perform HTTP 
 load tests. You may need to adjust **threads** and **connections** based on the 
@@ -161,16 +163,13 @@ available resources on your computer. You can also use other load testing tools.
 
 ```shell
 # Warm-up: 4 threads, 200 connections, 2 minutes
-wrk -t4 -c200 -d120s --latency --timeout 5s http://localhost:8080/benchmark/delay/1000
+wrk -t4 -c200 -d120s --latency --timeout 5s http://localhost:8080/benchmark/delay/100
 
-# Pressure: 8 threads, 10k connections, 10 minutes
-wrk -t8 -c10000 -d600s --latency --timeout 15s http://localhost:8080/benchmark/delay/1000
-# Server delay: 2s
-wrk -t8 -c10000 -d600s --latency --timeout 15s http://localhost:8080/benchmark/delay/2000
-# Server delay: 5s
-wrk -t8 -c10000 -d600s --latency --timeout 15s http://localhost:8080/benchmark/delay/5000
-# Server delay: 10s
-wrk -t8 -c10000 -d600s --latency --timeout 15s http://localhost:8080/benchmark/delay/10000
+# Pressure: 8 threads, 10k connections, 10 minutes, API dealy: 1s, 0.5s, 0.2s, 0.1s
+wrk -t8 -c10000 -d600s --latency --timeout 5s http://localhost:8080/benchmark/delay/1000
+wrk -t8 -c10000 -d600s --latency --timeout 5s http://localhost:8080/benchmark/delay/500
+wrk -t8 -c10000 -d600s --latency --timeout 5s http://localhost:8080/benchmark/delay/200
+wrk -t8 -c10000 -d600s --latency --timeout 5s http://localhost:8080/benchmark/delay/100
 ```
 
 ## Local execution

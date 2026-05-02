@@ -44,6 +44,4 @@ root soft nofile 200000
 root hard nofile 200000
 EOF
 
-# Check the host limit
-# ulimit -n
 echo "--- App Host Tuning Complete ---"
