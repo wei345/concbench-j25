@@ -3,3 +3,6 @@ server:
     threads:
       max: 2000
       max-queue-capacity: 100
+logging:
+  level:
+    org.apache.tomcat.util.net.NioEndpoint: error
