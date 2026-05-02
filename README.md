@@ -122,7 +122,7 @@ docker run --rm -d \
   -p 8080:8080 \
   concbench-j25-virtual-thread
 cat logs/out.log; sleep 1
-tail -f logs/usage-virtual-threadd.csv
+tail -f logs/usage-virtual-thread.csv
 # Stop
 docker container kill concbench-j25-virtual-thread
 

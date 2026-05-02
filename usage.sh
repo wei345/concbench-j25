@@ -8,15 +8,16 @@ echo "elapsed_seconds, cpu_percentage, threads, stack_committed_mb, \
 stack_reserved_mb, heap_used_mb, eden_mb, s0_kb, s1_kb, old_mb, meta_mb, \
 compressed_class_mb, ygc, ygct, fgc, fgct, cgc, cgct, gct" > $LOG_FILE
 while true; do
-    # 1. System metrics: CPU and up time
-    # Capture the output and convert etime to seconds in one go
-    read -r CPU ETIME <<< $(ps -p $PID -o %cpu= -o etime= | awk '{
-        split($2, t, ":");
+    # 1. System metrics
+    CPU=$(top -b -n 2 -d 1 | grep "java" | tail -1 | awk '{print $9}')
+    # Capture the elapsed time and convert etime to seconds in one go
+    ETIME=$(ps -p $PID -o etime= | awk '{
+        split($1, t, ":");
         len = 0; for (i in t) len++;
         if (len == 3) s = t[1]*3600 + t[2]*60 + t[3];
         else if (len == 2) s = t[1]*60 + t[2];
         else s = t[1];
-        print $1, s
+        print s
     }')
     THREADS=$(awk '/Threads/ {print $2}' /proc/$PID/status)
 
@@ -40,6 +41,4 @@ while true; do
                    et, cp, th, s_com, s_res, total_used, $6/1024, $3, $4, $8/1024, $10/1024, $12/1024, \
                    $13, $14, $15, $16, $17, $18, $19
         }' >> $LOG_FILE
-
-    sleep 1
 done
