@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 set -e
 
 # Write key parameters into the log file
@@ -15,4 +15,4 @@ sleep 1
 
 # Execute the monitoring script in the foreground
 # (This keeps the container alive)
-sh /app/usage.sh >/dev/null
+bash /app/usage.sh >/dev/null

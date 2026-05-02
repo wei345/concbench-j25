@@ -146,9 +146,6 @@ cat logs/out.log
 
 # CPU and memory usage
 tail -f logs/*.csv
-
-# Check the host limit
-ulimit -n
 ```
 
 ### 3. Execute pressure tests
