@@ -88,7 +88,7 @@ docker exec -it concbench-j25-thread-pool /bin/bash
 ### 2. Run Docker images
 
 Run one of the three images using the `docker run` commands provided below, 
-then go down to "Check logs" or "Execute pressure tests". You may need to 
+then go down to the "Execute pressure tests" section. You may need to 
 adjust the **memory size** based on the available resources on your computer.
 
 ```shell
@@ -104,6 +104,8 @@ docker run --rm -d \
   -v `pwd`/logs:/app/logs \
   -p 8080:8080 \
   concbench-j25-thread-pool
+cat logs/out.log; sleep 1
+tail -f logs/usage-thread-pool.csv
 # Stop
 docker container kill concbench-j25-thread-pool
 
@@ -119,6 +121,8 @@ docker run --rm -d \
   -v `pwd`/logs:/app/logs \
   -p 8080:8080 \
   concbench-j25-virtual-thread
+cat logs/out.log; sleep 1
+tail -f logs/usage-virtual-threadd.csv
 # Stop
 docker container kill concbench-j25-virtual-thread
 
@@ -134,18 +138,10 @@ docker run --rm -d \
   -v `pwd`/logs:/app/logs \
   -p 8080:8080 \
   concbench-j25-reactive
+cat logs/out.log; sleep 1
+tail -f logs/usage-reactive.csv
 # Stop
 docker container kill concbench-j25-reactive
-```
-
-Check logs
-
-```shell
-# Check JVM command-line arguments
-cat logs/out.log
-
-# CPU and memory usage
-tail -f logs/*.csv
 ```
 
 ### 3. Execute pressure tests
