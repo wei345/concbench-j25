@@ -1,0 +1,69 @@
+wrk -t8 -c10000 -d600s --latency --timeout 5s http://10.152.0.2:8080/benchmark/delay/1000
+wrk -t8 -c10000 -d600s --latency --timeout 5s http://10.152.0.2:8080/benchmark/delay/500
+wrk -t8 -c10000 -d600s --latency --timeout 5s http://10.152.0.2:8080/benchmark/delay/200
+wrk -t8 -c10000 -d600s --latency --timeout 5s http://10.152.0.2:8080/benchmark/delay/100
+
+
+
+Running 10m test @ http://10.152.0.2:8080/benchmark/delay/1000
+  8 threads and 10000 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency     1.25s   141.88ms   4.99s    89.67%
+    Req/Sec   349.46    289.87     2.27k    66.41%
+  Latency Distribution
+     50%    1.22s 
+     75%    1.24s 
+     90%    1.36s 
+     99%    1.64s 
+  1197301 requests in 10.00m, 124.46MB read
+  Socket errors: connect 0, read 16613576, write 0, timeout 654
+Requests/sec:   1995.36
+Transfer/sec:    212.40KB
+
+
+Running 10m test @ http://10.152.0.2:8080/benchmark/delay/500
+  8 threads and 10000 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency   726.57ms  116.24ms   4.18s    94.80%
+    Req/Sec   501.75    274.65     1.51k    60.02%
+  Latency Distribution
+     50%  718.16ms
+     75%  735.39ms
+     90%  775.50ms
+     99%  981.77ms
+  2395192 requests in 10.00m, 246.70MB read
+  Socket errors: connect 0, read 15830380, write 51, timeout 1381
+Requests/sec:   3991.32
+Transfer/sec:    420.96KB
+
+
+Running 10m test @ http://10.152.0.2:8080/benchmark/delay/200
+  8 threads and 10000 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency   397.06ms  105.04ms   3.79s    95.04%
+    Req/Sec     1.25k   137.81     2.76k    69.47%
+  Latency Distribution
+     50%  393.31ms
+     75%  406.18ms
+     90%  419.67ms
+     99%  629.00ms
+  5977684 requests in 10.00m, 615.72MB read
+  Socket errors: connect 0, read 13768610, write 0, timeout 2211
+Requests/sec:   9961.16
+Transfer/sec:      1.03MB
+
+
+Running 10m test @ http://10.152.0.2:8080/benchmark/delay/100
+  8 threads and 10000 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency   269.85ms  127.04ms   3.98s    94.58%
+    Req/Sec     2.28k   289.81     3.79k    73.35%
+  Latency Distribution
+     50%  262.38ms
+     75%  285.89ms
+     90%  305.60ms
+     99%  653.75ms
+  10883707 requests in 10.00m, 1.09GB read
+  Socket errors: connect 0, read 10267000, write 0, timeout 2624
+Requests/sec:  18136.62
+Transfer/sec:      1.87MB

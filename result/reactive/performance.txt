@@ -1,0 +1,66 @@
+wrk -t8 -c10000 -d600s --latency --timeout 5s http://10.152.0.2:8080/benchmark/delay/1000
+wrk -t8 -c10000 -d600s --latency --timeout 5s http://10.152.0.2:8080/benchmark/delay/500
+wrk -t8 -c10000 -d600s --latency --timeout 5s http://10.152.0.2:8080/benchmark/delay/200
+wrk -t8 -c10000 -d600s --latency --timeout 5s http://10.152.0.2:8080/benchmark/delay/100
+
+
+Running 10m test @ http://10.152.0.2:8080/benchmark/delay/1000
+  8 threads and 10000 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency     1.00s     8.31ms   1.38s    99.35%
+    Req/Sec     2.46k     1.47k    6.04k    59.17%
+  Latency Distribution
+     50%    1.00s
+     75%    1.00s
+     90%    1.00s
+     99%    1.01s
+  5986298 requests in 10.00m, 422.46MB read
+Requests/sec:   9976.29
+Transfer/sec:    720.94KB
+
+
+Running 10m test @ http://10.152.0.2:8080/benchmark/delay/500
+  8 threads and 10000 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency   500.82ms    6.20ms 862.42ms   99.17%
+    Req/Sec     2.54k   774.48     6.03k    71.16%
+  Latency Distribution
+     50%  500.31ms
+     75%  500.56ms
+     90%  501.24ms
+     99%  506.24ms
+  11967156 requests in 10.00m, 833.13MB read
+Requests/sec:  19942.22
+Transfer/sec:      1.39MB
+
+
+Running 10m test @ http://10.152.0.2:8080/benchmark/delay/200
+  8 threads and 10000 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency   223.99ms   25.76ms 827.04ms   86.07%
+    Req/Sec     5.61k   821.54     9.28k    70.06%
+  Latency Distribution
+     50%  215.79ms
+     75%  234.39ms
+     90%  258.11ms
+     99%  309.06ms
+  26773836 requests in 10.00m, 1.82GB read
+Requests/sec:  44619.97
+Transfer/sec:      3.11MB
+
+
+Running 10m test @ http://10.152.0.2:8080/benchmark/delay/100
+  8 threads and 10000 connections
+
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency   201.30ms   61.60ms   4.85s    81.42%
+    Req/Sec     6.24k     1.60k   11.90k    68.17%
+  Latency Distribution
+     50%  189.01ms
+     75%  224.83ms
+     90%  270.45ms
+     99%  368.15ms
+  29809768 requests in 10.00m, 2.03GB read
+  Socket errors: connect 0, read 0, write 0, timeout 1226
+Requests/sec:  49678.21
+Transfer/sec:      3.46MB
