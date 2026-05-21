@@ -1,3 +1,5 @@
+result/*.png
+
 # Intellij project files
 *.iml
 .idea/
