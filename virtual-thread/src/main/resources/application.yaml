@@ -1,5 +1,6 @@
 server:
   tomcat:
+    max-connections: 2147483647
     threads:
       max: 2147483647
 spring:
