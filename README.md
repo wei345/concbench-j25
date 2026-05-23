@@ -163,14 +163,15 @@ load tests. You may need to adjust **threads** and **connections** based on the
 available resources on your computer. You can also use other load testing tools.
 
 ```shell
-# Warm-up: 4 threads, 200 connections, 2 minutes
-wrk -t4 -c200 -d120s --latency --timeout 5s http://localhost:8080/benchmark/delay/100
-
-# Pressure: 8 threads, 10k connections, 10 minutes, API dealy: 1s, 0.5s, 0.2s, 0.1s
-wrk -t8 -c10000 -d600s --latency --timeout 5s http://localhost:8080/benchmark/delay/1000
-wrk -t8 -c10000 -d600s --latency --timeout 5s http://localhost:8080/benchmark/delay/500
-wrk -t8 -c10000 -d600s --latency --timeout 5s http://localhost:8080/benchmark/delay/200
-wrk -t8 -c10000 -d600s --latency --timeout 5s http://localhost:8080/benchmark/delay/100
+# Warm-up: 8 threads, 10k connections, 2 minutes
+wrk -t8 -c10000 -d120s --latency --timeout 10s http://10.152.0.2:8080/benchmark/delay/100 | tee performance.txt
+sleep 15
+# Pressure: 8 threads, 10k connections, 10 minutes, API dealy: 0.1 s, 0.2 s, 0.5 s
+wrk -t8 -c10000 -d600s --latency --timeout 10s http://10.152.0.2:8080/benchmark/delay/100 | tee -a performance.txt
+sleep 15
+wrk -t8 -c10000 -d600s --latency --timeout 10s http://10.152.0.2:8080/benchmark/delay/200 | tee -a performance.txt
+sleep 15
+wrk -t8 -c10000 -d600s --latency --timeout 10s http://10.152.0.2:8080/benchmark/delay/500 | tee -a performance.txt
 ```
 
 ## Local execution
