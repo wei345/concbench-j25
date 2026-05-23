@@ -1,7 +1,15 @@
 server:
   tomcat:
+    # Maximum number of connections that the server accepts and processes at
+    # any given time. Once the limit has been reached, the operating system
+    # may still accept connections based on the "acceptCount" property.
     max-connections: 2147483647
+    # Maximum queue length for incoming connection requests when all possible
+    # request processing threads are in use.
+    accept-count: 2147483647
     threads:
+      # Maximum amount of worker threads. Doesn't have an effect if virtual
+      # threads are enabled.
       max: 2147483647
 spring:
   threads:
