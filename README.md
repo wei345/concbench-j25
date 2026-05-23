@@ -92,7 +92,11 @@ then go down to the "Execute pressure tests" section. You may need to
 adjust the **memory size** based on the available resources on your computer.
 
 ```shell
+# Stop thread-pool if running
+docker container kill concbench-j25-thread-pool
 # Start thread-pool
+# 3750 is the "optimal" thread count for this test 
+# based on a series test I've run.
 docker run --rm -d \
   --name concbench-j25-thread-pool \
   --ulimit nofile=200000:200000 \
@@ -100,16 +104,15 @@ docker run --rm -d \
   -e JAVA_OPTS="-XX:+UseZGC \
     -Xmx8G -Xms8G \
     -XX:NativeMemoryTracking=summary \
-    -Dserver.tomcat.threads.max=2000" \
+    -Dserver.tomcat.threads.max=3750" \
   -v `pwd`/logs:/app/logs \
   -p 8080:8080 \
   concbench-j25-thread-pool
-cat logs/out.log; sleep 2
+sleep 2; cat logs/out.log
 tail -f logs/usage-thread-pool.csv
-# Stop
-docker container kill concbench-j25-thread-pool
 
-
+# Stop virtual-thread if running
+docker container kill concbench-j25-virtual-thread
 # Start virtual-thread
 docker run --rm -d \
   --name concbench-j25-virtual-thread \
@@ -121,12 +124,12 @@ docker run --rm -d \
   -v `pwd`/logs:/app/logs \
   -p 8080:8080 \
   concbench-j25-virtual-thread
-cat logs/out.log; sleep 2
+sleep 2; cat logs/out.log
 tail -f logs/usage-virtual-thread.csv
-# Stop
-docker container kill concbench-j25-virtual-thread
 
 
+# Stop reactive if running
+docker container kill concbench-j25-reactive
 # Start reactive
 docker run --rm -d \
   --name concbench-j25-reactive \
@@ -140,10 +143,8 @@ docker run --rm -d \
   -v `pwd`/logs:/app/logs \
   -p 8080:8080 \
   concbench-j25-reactive
-cat logs/out.log; sleep 2
+sleep 2; cat logs/out.log
 tail -f logs/usage-reactive.csv
-# Stop
-docker container kill concbench-j25-reactive
 ```
 
 ### 3. Execute pressure tests

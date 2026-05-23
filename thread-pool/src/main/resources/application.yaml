@@ -10,7 +10,7 @@ server:
     threads:
       # Maximum amount of worker threads. Doesn't have an effect if virtual
       # threads are enabled.
-      max: 10000
+      max: 3750
 logging:
   level:
     org.apache.tomcat.util.net.NioEndpoint: error
